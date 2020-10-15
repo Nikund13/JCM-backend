@@ -1,0 +1,25 @@
+
+table name = licence_station
+
+columns: {
+      id: {type: 'number'},
+      company_code: {type: 'string'},
+      station_code: {type: 'string'},
+      station_name: {type: 'string'}
+      station_ref: {type: 'string'},
+      altitute: {type: 'number'},
+      longitute: {type: 'number'},
+      status: {type: 'string'},
+    },
+
+
+create table licence_station(
+  id serial PRIMARY KEY,
+  company_code INTEGER,
+  station_code INTEGER,
+  station_name character(50),
+  station_ref character(50),
+  altitute DOUBLE,
+  longitute DOUBLE,
+  status character(50)
+)

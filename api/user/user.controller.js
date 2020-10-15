@@ -28,28 +28,3 @@ export const getProfile = async(req,res) =>{
         })
     }
 }
-
-export const licenseStation = async(req,res) =>{
-    try{
-        const profileData= await client.query(`select * from licence_station ORDER BY id ASC`)
-        if(profileData.rows.length<=0){
-            res.status(401).send({
-                success:false,
-                message:'somthing goes to wrong in find data'
-            })
-        }
-        else{
-            res.status(201).send({
-                success:true,
-                message:'data find successfully',
-                data:profileData.rows,
-            })
-        }
-    }
-    catch(err){
-        res.status(401).send({
-            success:false,
-            message:err.message
-        })
-    }
-}
