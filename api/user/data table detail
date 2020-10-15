@@ -1,0 +1,8 @@
+create table users(
+  id integer primary key not null,
+  name text,
+  email character,
+  password text,
+  auth_type integer,
+  user_type character
+)
