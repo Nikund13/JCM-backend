@@ -1,0 +1,9 @@
+{
+    "devuid":"1:003;001551343036353336","devid":"1","station_code":"1004","company_code":"1","country_code":"994","version":"VER:1.02A","compile_date":"oct 19 2020","dev_type":"TRCKEXT","supplier":"","distributor":"","licence_status":"1","licence_expiry_date":"2030-01-01 00:00:00","sale_date":"","sale_by":"KAAN","op_status":"0"
+}
+
+
+
+CREATE SEQUENCE licence_device_id_seq OWNED BY licence_device.id;
+ALTER TABLE licence_device ALTER COLUMN id SET DEFAULT nextval('licence_device_id_seq');
+UPDATE licence_device SET id = nextval('licence_device_id_seq');
