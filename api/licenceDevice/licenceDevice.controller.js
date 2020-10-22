@@ -50,9 +50,11 @@ export const insertData = async(req,res) =>{
             })
         }
         else{
+          const profileDataId= await client.query(`select id from licence_device ORDER BY ID DESC LIMIT 1`)
             res.status(201).send({
                 success:true,
                 message:'data insert successfully',
+                data: profileDataId.rows[0].id,
             })
         }
     }

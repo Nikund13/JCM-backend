@@ -41,7 +41,6 @@ export const insertData = async(req,res) =>{
         }
         const profileData= await client.query(`INSERT INTO licence_station (
             company_code,station_code,station_name,station_ref,altitute,longitute,status)VALUES('${company_code}', '${station_code}', '${station_name}','${station_ref}','${altitute}','${longitute}','${status}')`)
-        // console.log(profileData);
 
         if(profileData.rowCount<=0){
             res.status(401).send({
@@ -50,9 +49,11 @@ export const insertData = async(req,res) =>{
             })
         }
         else{
+          const profileDataId= await client.query(`select id from licence_station ORDER BY ID DESC LIMIT 1`)
             res.status(201).send({
                 success:true,
                 message:'data insert successfully',
+                data: profileDataId.rows[0].id,
             })
         }
     }
