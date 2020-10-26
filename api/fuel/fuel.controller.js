@@ -56,8 +56,8 @@ export const countryData = async(req,res) =>{
 }
 export const companyData = async(req,res) =>{
     try{
-        const {contryId}= req.body;
-        const data= await client.query(`select * from licence_company where country_id='${contryId}'`)
+        const {countryId}= req.query;
+        const data= await client.query(`select * from licence_company where country_id='${countryId}'`)
         // console.log(data);
         if(data.rowCount<=0){
             res.status(401).send({
@@ -84,7 +84,7 @@ export const companyData = async(req,res) =>{
 
 export const stationData = async(req,res) =>{
     try{
-        const {companyId}= req.body;
+        const {companyId}= req.query;
         const data= await client.query(`select id,company_code,station_code,station_name from licence_station where company_code='${companyId}'`)
         // console.log(data);
         if(data.rowCount<=0){
