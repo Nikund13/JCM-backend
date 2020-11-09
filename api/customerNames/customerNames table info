@@ -1,0 +1,30 @@
+· id, (int)
+· customer_name (50 chr)
+· erp_code (50 chr)
+· address (100 chr)
+· village_code (100 chr)
+· city_code (12 chr)
+· country_code (12 chr)
+· contact_person (50 chr)
+· email (50 chr)
+· phone (25 chr)
+· cell (25 chr)
+· tax_office (50 chr)
+· tax_id (50 chr)
+· customer_type_id => dropdown will be linked to customer_type.id . This shows how customer can pay to station when he want to fuel.
+· customer_group_id => dropdown will be linked to web_user_type.id
+· create_date (YYYY-MM-DD) => will be created automcatically when a new record entered
+· web_user_password (30 chr) => keep it none hash for now.
+· web_username (50 chr)
+· limit_type => dropwon will be linked to limit_type.id
+· blacklist => yes (1) or no (0)
+· restriction_id
+· discount_id => dropdown will be linked to customer_discount_type.id
+· country_id => dropdown will be linked to licence_country.id
+· company_id => dropdown will be linked to licence_company.id
+
+
+
+CREATE SEQUENCE Customer_names_id_seq OWNED BY Customer_names.id;
+ALTER TABLE Customer_names ALTER COLUMN id SET DEFAULT nextval('Customer_names_id_seq');
+UPDATE Customer_names SET id = nextval('Customer_names_id_seq');

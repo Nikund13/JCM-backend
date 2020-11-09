@@ -14,9 +14,18 @@ export const getData = async(req,res) =>{
         }
         else{
             const newitem=[];
+            // console.log(profileData.rows.length, "profileData.rows.length");
                 for(var i=0;i<profileData.rows.length;i++){
+                  // console.log(profileData.rows[i].licence_expiry_date);
+                  // const data = profileData.rows[i].licence_expiry_date.split('T')
+                  // const data = profileData.rows[i].licence_expiry_date
+                  // console.log("data",data.split('T'));
+                    // profileData.rows[i].licence_expiry_date=data
+                    // console.log("=-=-=--=-=proifle data", profileData.rows[i].licence_expiry_date);
+
                     const companyData= await client.query(`select * from licence_company where id='${profileData.rows[i].company_code}' `)
                     profileData.rows[i].company_code=companyData.rows[0].company_name
+                    // console.log("=-=-=-=-profileData.rows[i]", profileData.rows[i].licence_expiry_date);
                     newitem.push(profileData.rows[i])
                 }
             res.status(201).send({
@@ -70,7 +79,6 @@ export const insertData = async(req,res) =>{
 export const updateData = async(req,res) =>{
     try{
         var {id,devuid,devid,station_code,company_code,country_code,version,compile_date,dev_type,suplier,distributor,licence_status,licence_expiry_date,sale_date,sale_by,op_status}=req.body
-        console.log("=-==-=-=-==-=-=name:",company_code);
         const companyData= await client.query(`select * from licence_company where company_name='${company_code}' `)
         // console.log(companyData.rows[0].id);
         const companyCode = await client.query(`SELECT licence_country.country_code FROM licence_country INNER JOIN licence_company ON licence_country.id = licence_company.country_id where licence_company.

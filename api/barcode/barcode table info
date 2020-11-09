@@ -1,0 +1,26 @@
+barcode_operation :
+
+This table is used to insert/delete/update “barcode tickets” which will be assigned to customer (final customer) . This tickets are one time usage tickets for specific fuel type. Our form will insert, delete or update barcodes (Page name MANAGE BARCODES) rest of columns are not responsibility of us for now.
+
+· id (int) => auto id
+
+· customerid (int) => id will be sellected from Customer_names as Search text and select box
+
+· barcode (20 chr) => txt entered
+
+· presettype (int) => dropdown will be linked to
+
+· presetamount (int) => number input
+
+· used (int) => Yes(1) No(0)
+
+· fueltype (int) => dropdown linked to fuel_name.id
+
+· fuelname (13 chr) => will be updated as fuel_name.fuel_name based on selection of fuel_name.id of fueltype
+
+· company_id (int) => will be linked to licence_company.id
+
+
+CREATE SEQUENCE barcode_operation_id_seq OWNED BY barcode_operation.id;
+ALTER TABLE barcode_operation ALTER COLUMN id SET DEFAULT nextval('barcode_operation_id_seq');
+UPDATE barcode_operation SET id = nextval('barcode_operation_id_seq');

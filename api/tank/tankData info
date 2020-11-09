@@ -1,0 +1,5 @@
+SELECT fuel_type_id,company_code,station_code,data_creation_time,gross_fuel_vol,water_level FROM tank_data where company_code=${companyId} AND station_code=${stationId} AND fuel_type_id=${fuelId} AND data_creation_time="2020-07-18"')
+
+SELECT fuel_type_id,company_code,station_code,data_creation_time,gross_fuel_vol,water_level FROM tank_data where extract(month from data_creation_time) = 8 AND extract(year from data_creation_time) = 2020 AND extract(day from data_creation_time) = 15
+
+SELECT fuel_type_id,company_code,station_code,data_creation_time,gross_fuel_vol,water_level FROM tank_data where date(data_creation_time) = '2020-08-15'

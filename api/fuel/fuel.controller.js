@@ -14,9 +14,11 @@ export const insertPriceData = async(req,res) =>{
             })
         }
         else{
+          const fuelDataId= await client.query(`select station_code from fuel_name_price ORDER BY ID DESC LIMIT 1`)
             res.status(201).send({
                 success:true,
                 message:'data added successfully',
+                data:fuelDataId.rows[0].station_code
             })
         }
     }
@@ -111,8 +113,8 @@ export const stationData = async(req,res) =>{
 
 export const priceData = async(req,res) =>{
     try{
-        const {stationId}= req.body;
-        const data= await client.query(`select * from fuel_name_price WHERE station_code='${stationId}' `)
+        const {stationId}= req.query;
+        const data= await client.query(`select * from fuel_name_price WHERE station_code='${stationId}' order by price_date DESC`)
         console.log(data);
         if(data.rowCount<=0){
             res.status(401).send({
@@ -121,10 +123,22 @@ export const priceData = async(req,res) =>{
             })
         }
         else{
+          const newitem=[];
+              for(var i=0;i<data.rows.length;i++){
+                  const companyData= await client.query(`select * from licence_company where id='${data.rows[i].company_code}' `)
+                  data.rows[i].company_code=companyData.rows[0].company_name
+                  const countryData= await client.query(`select * from licence_country where id='${data.rows[i].country_code}' `)
+                  data.rows[i].country_code=countryData.rows[0].country_name
+                  const stationData= await client.query(`select * from licence_station where id='${data.rows[i].station_code}' `)
+                  data.rows[i].station_code=stationData.rows[0].station_name
+                  const fuelData= await client.query(`select * from fuel_name where id='${data.rows[i].fuel_name}' `)
+                  data.rows[i].fuel_name=fuelData.rows[0].fuel_name
+                  newitem.push(data.rows[i])
+              }
             res.status(201).send({
                 success:true,
                 message:'data find successfully',
-                data:data.rows,
+                data:newitem,
             })
         }
     }
