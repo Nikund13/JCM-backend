@@ -14,13 +14,17 @@ export const getData = async(req,res) =>{
         else{
             const newitem=[];
                 for(var i=0;i<data.rows.length;i++){
-                    const companyData= await client.query(`select * from licence_company where id='${data.rows[i].company_id}' `)
-                    if(companyData.rowCount>0){
-                        data.rows[i].company_id=companyData.rows[0].company_name
+                    if(data.rows[i].company_id){
+                      const companyData= await client.query(`select * from licence_company where id='${data.rows[i].company_id}' `)
+                      if(companyData.rowCount>0){
+                          data.rows[i].company_id=companyData.rows[0].company_name
+                      }
                     }
-                    const customerData= await client.query(`select customer_name from customer_names where id='${data.rows[i].customerid}' `)
-                    if (customerData.rowCount>0) {
-                        data.rows[i].customerid=customerData.rows[0].customer_name
+                    if(data.rows[i].customerid){
+                      const customerData= await client.query(`select customer_name from customer_names where id='${data.rows[i].customerid}' `)
+                      if (customerData.rowCount>0) {
+                          data.rows[i].customerid=customerData.rows[0].customer_name
+                      }
                     }
                     newitem.push(data.rows[i])
                 }
@@ -42,14 +46,14 @@ export const getData = async(req,res) =>{
 
 export const insertData = async(req,res) =>{
     try{
-        var {customerid,barcode,presettype,presetamount,used,fueltype,company_id}=req.body
+        var {customerid,barcode,presettype,presetamount,used,fuelname,company_id}=req.body
 
         const companyData= await client.query(`select * from licence_company where company_name='${company_id}' `)
         const customerData= await client.query(`select * from customer_names where customer_name='${customerid}' `)
-        const fuelData= await client.query(`select * from fuel_name where id='${fueltype}' `)
+        const fuelData= await client.query(`select * from fuel_name where fuel_name='${fuelname}' `)
 
         const data= await client.query(`INSERT INTO barcode_operation (
-            customerid,barcode,presettype,presetamount,used,fueltype,fuelname,company_id)VALUES('${customerData.rows[0].id}', '${barcode}', '${presettype}','${presetamount}','${used}','${fueltype}','${fuelData.rows[0].fuel_name}','${companyData.rows[0].id}')`)
+            customerid,barcode,presettype,presetamount,used,fueltype,fuelname,company_id)VALUES('${customerData.rows[0].id}', '${barcode}', '${presettype}','${presetamount}','${used}','${fuelData.rows[0].id}','${fuelname}','${companyData.rows[0].id}')`)
 
         if(data.rowCount<=0){
             res.status(401).send({
@@ -77,13 +81,13 @@ export const insertData = async(req,res) =>{
 
 export const updateData = async(req,res) =>{
     try{
-        var {id,customerid,barcode,presettype,presetamount,used,fueltype,company_id}=req.body
+        var {id,customerid,barcode,presettype,presetamount,used,fuelname,company_id}=req.body
 
         const companyData= await client.query(`select * from licence_company where company_name='${company_id}' `)
         const customerData= await client.query(`select * from customer_names where customer_name='${customerid}' `)
-        const fuelData= await client.query(`select * from fuel_name where id='${fueltype}' `)
+        const fuelData= await client.query(`select * from fuel_name where fuel_name='${fuelname}' `)
 
-        const data = await client.query(`UPDATE barcode_operation SET customerid=${customerData.rows[0].id},barcode=${barcode},presettype=${presettype},presetamount=${presetamount},used=${used},fueltype=${fueltype},fuelname='${fuelData.rows[0].fuel_name}',company_id=${companyData.rows[0].id}  WHERE id = '${id}'`)
+        const data = await client.query(`UPDATE barcode_operation SET customerid=${customerData.rows[0].id},barcode=${barcode},presettype=${presettype},presetamount=${presetamount},used=${used},fueltype=${fuelData.rows[0].id},fuelname='${fuelname}',company_id=${companyData.rows[0].id}  WHERE id = '${id}'`)
 
         if(data.rowCount<=0){
             res.status(401).send({

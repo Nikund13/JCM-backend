@@ -25,14 +25,12 @@ export const signup = async (req,res) =>{
             const emailId = email.toLowerCase();
             client.query(`select email from users where email='${email}'`, (err, results) => {
               if(err){
-                 console.log("=-=-=-=-=-=-=--err",err.stack)
                  return res.status(400).json(err)
                } else if(results.rows.length) {
                     return res.status(409)
                     .json({code:409, status:false,message:'This email is already exists'})
               }
               else {
-                console.log('in else');
                 client.query(
                   `INSERT INTO users(name, email, password)VALUES('${name}', '${email}', '${bcrypt.hashSync(password)}')`,
                   (err, results) => {
@@ -64,7 +62,6 @@ const expirationInterval =
 
 const tokenForUser = (user) => {
     try {
-      console.log("-=-=-=-user",user)
       const timestamp = new Date().getTime();
       return jwt.sign(
         {
@@ -93,7 +90,6 @@ export const signin = async (req,res) => {
                     return res.status(400).json(err)
                   }
                   else if(results.rows.length==1){
-                        console.log("==-=-=-===-=-=-=-=-=data",results.rows.length);
                        res.status(201).send({
                            success: true,
                            message:"login Sucessfully",

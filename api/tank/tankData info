@@ -3,3 +3,6 @@ SELECT fuel_type_id,company_code,station_code,data_creation_time,gross_fuel_vol,
 SELECT fuel_type_id,company_code,station_code,data_creation_time,gross_fuel_vol,water_level FROM tank_data where extract(month from data_creation_time) = 8 AND extract(year from data_creation_time) = 2020 AND extract(day from data_creation_time) = 15
 
 SELECT fuel_type_id,company_code,station_code,data_creation_time,gross_fuel_vol,water_level FROM tank_data where date(data_creation_time) = '2020-08-15'
+
+
+SELECT data_creation_time,gross_fuel_vol,water_level,tank_capacity FROM tank_data where company_code=1 AND station_code=1001 AND fuel_type_id=1 AND date(data_creation_time)>='2020-07-01'AND date(data_creation_time)<='2020-08-31'

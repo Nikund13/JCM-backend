@@ -80,7 +80,6 @@ export const updateData = async(req,res) =>{
             longitute=NaN
         }
         const companyData= await client.query(`select * from licence_company where company_name='${company_code}' `)
-        console.log(companyData.rows[0].id);
         const profileData= await client.query(`UPDATE licence_station SET company_code=${companyData.rows[0].id},station_code=${station_code},station_name='${station_name}',station_ref='${station_ref}',altitute='${altitute}',longitute='${longitute}',status='${status}'  WHERE id = '${id}'`)
         // console.log(profileData);
         if(profileData.rowCount<=0){

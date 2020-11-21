@@ -1,5 +1,4 @@
 import express from 'express'
-// import { licenceDeviceRouter } from '../licenceDevice/licenceDevice.resRoute';
 import {
     getData,
     updateData,
