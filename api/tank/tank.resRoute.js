@@ -7,7 +7,8 @@ import {
     getprevMonthdata,
     dispenserSaleData,
     blacklistFilter,
-    getSummarydata
+    getSummarydata,
+    tankValues
 } from './tank.controller'
 export const tankRouter = express.Router();
 
@@ -20,3 +21,4 @@ tankRouter.get("/getprevMonthdata",getprevMonthdata)
 tankRouter.get("/getSummarydata",getSummarydata)
 tankRouter.get("/dispenserSale",dispenserSaleData)
 tankRouter.get('/blacklistFilter',blacklistFilter)
+tankRouter.get("/tankValues",tankValues)
