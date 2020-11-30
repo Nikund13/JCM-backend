@@ -320,7 +320,7 @@ export const tankValues = async(req,res) =>{
       console.log(data.rows);
 
         if(data.rowCount<=0){
-            res.status(401).send({
+            res.status(201).send({
                 success:false,
                 message:'data not found'
             })
