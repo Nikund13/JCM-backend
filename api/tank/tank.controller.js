@@ -217,7 +217,7 @@ export const dispenserSaleData = async(req,res) =>{
         const stationData =await client.query(`SELECT * FROM licence_station where id='${stationCode}'`)
         const data= await client.query(`SELECT * FROM dispenser_sale where country_code=${contryData.rows[0].country_code} AND company_code=${companyId} AND station_code=${stationData.rows[0].station_code} AND date(data_creation_time)>='${startDate}' AND date(data_creation_time)<='${endDate}'`)
         if(data.rowCount<=0){
-            res.status(401).send({
+            res.status(201).send({
                 success:false,
                 message:'data not found'
             })
@@ -251,7 +251,7 @@ export const dispenserSaleData = async(req,res) =>{
 }
 export const blacklistFilter = async(req,res) =>{
     try{
-        var {startDate,endDate} = req.body;
+        var {startDate,endDate} = req.query;
         let date_ob = new Date();
         var month = date_ob.getMonth();
         var date = date_ob.getDate();

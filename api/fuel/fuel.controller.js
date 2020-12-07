@@ -117,7 +117,7 @@ export const priceData = async(req,res) =>{
         const data= await client.query(`select * from fuel_name_price WHERE station_code='${stationId}' order by price_date DESC`)
         console.log(data);
         if(data.rowCount<=0){
-            res.status(401).send({
+            res.status(201).send({
                 success:false,
                 message:'data not found'
             })
