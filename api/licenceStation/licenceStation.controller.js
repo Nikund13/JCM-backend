@@ -155,3 +155,79 @@ export const getCompanyId = async(req,res) =>{
         })
     }
 }
+
+export const getStationDetail = async(req,res) =>{
+    try{
+        const {company_name,station_code} = req.query;
+        console.log(company_name,station_code);
+        const company_code = await client.query(`select * from licence_company where company_name='${company_name}'`)
+        if(company_code.rowCount<=0){
+            res.status(201).send({
+                success:false,
+                message:'company not found'
+            })
+        }
+        const stationDetail= await client.query(`SELECT t.id,
+                                                       t.data_creation_time,
+                                                       F.fuel_name,
+                                                       t.plate_info,
+                                                       t.rf_card_code,
+                                                       t.payment_type,
+                                                       t.price_per_volume,
+                                                       t.volume,
+                                                       t.amount,
+                                                       t.start_total,
+                                                       t.end_total,
+                                                       t.dcr_total,
+                                                       t.dev_id,
+                                                       t.device_mode,
+                                                       t.pump_id,
+                                                       t.nozzle_id,
+                                                       t.tank_id,
+                                                       t.visual_pump_id,
+                                                       t.fleet_code,
+                                                       t.fleet_name
+                                                FROM public.dispenser_sale t
+                                                INNER JOIN fuel_name F on t.fuel_type_id = F.id
+                                                where company_code=${company_code.rows[0].id}
+                                                  and station_code=${station_code}
+                                                ORDER BY t.data_creation_time desc
+                                                limit 10`)
+
+        const analogDetail = await client.query(`SELECT t.data_creation_time
+                                                     , t.analog_1
+                                                     , t.analog_2
+                                                     , t.analog_3
+                                                     , t.analog_4
+                                                FROM public.analog_data t
+                                                where station_code=${station_code} and company_code =${company_code.rows[0].id}
+                                                ORDER BY t.id desc limit 1`)
+        if(stationDetail.rowCount<=0){
+            res.status(201).send({
+                success:false,
+                message:'stationDetail not found'
+            })
+        }
+        else if(analogDetail.rowCount<=0){
+            res.status(201).send({
+                success:false,
+                message:'analogDetail not found'
+            })
+        }
+        else{
+            res.status(201).send({
+                success:true,
+                message:'data find successfully',
+                stationDetail:stationDetail.rows,
+                analogDetail:analogDetail.rows,
+
+            })
+        }
+    }
+    catch(err){
+        res.status(401).send({
+            success:false,
+            message:err.message
+        })
+    }
+}
