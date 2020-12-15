@@ -11,7 +11,7 @@ const smtpTransport = nodemailer.createTransport({
     port: 587,
     auth: {
       user: "test.dds0001@gmail.com",
-      pass: '1234daydreamsoft'
+      pass: 'DDS1234daydreamsoft'
     }
   });
 // Registration api
@@ -123,18 +123,18 @@ export const forgotPassword = async (req,res) =>{
     const emailId = email.toLowerCase();
     const emailRegexp = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
     if (!emailRegexp.test(emailId)) {
-        return res.status(422).send({ success: false, message: "Invalid Email" });
+        return res.status(200).send({ success: false, message: "Invalid Email" });
       }
     const isEmailExist = await client.query(`select name,email from users where email='${email}'`)
-      if (isEmailExist.rows.length <= 0) {
+      if (!isEmailExist) {
         return res
-          .status(422)
+          .status(200)
           .send({ success: false, message: "email in not registered" });
       }
-      // const mail = {
-      //   emailId:email
-      // }
-      const token = tokenForUser(email);
+      const mail = {
+        emailId:email
+      }
+      const token = tokenForUser(mail);
       const data = {
         to: emailId,
         from: process.env.MAILER_EMAIL_ID,
@@ -142,7 +142,7 @@ export const forgotPassword = async (req,res) =>{
         text:
           "Confirm your email address to get started.\n\n" +
           "Please click on the following link, or paste this into your browser to the reset password process:\n\n" +
-          "http://localhost:8000/auth/resetpassword?token=" +
+          "http://localhost:4200/reset-password?token=" +
           token +
           "\n\n" +
           "If you did not need this, please ignore this email and your password will remain unchanged.\n"
@@ -151,7 +151,7 @@ export const forgotPassword = async (req,res) =>{
         return err ? res.status(422).send({
               success: false,
               message: err
-            }) : res.status(200).send({
+            }) : res.status(201).send({
               success: true,
               message: "please check your email to reset your password!"
             });
@@ -168,12 +168,8 @@ export const resetPassword = async(req,res) =>{
     const token = req.query.token;
     const newPassword = req.body.password;
     const decoded =jwt.decode(token)
-    console.log("email::",decoded.sub);
-    // await Users.findOneAndUpdate(
-    //   { emailId: decoded.sub },
-    //   { password: bcrypt.hashSync(req.body.password) }
-    // );
-    const response = await client.query(`UPDATE users SET password = '${bcrypt.hashSync(newPassword)}' WHERE email = '${decoded.sub}'`)
+    const password= bcrypt.hashSync(newPassword)
+    const response = await client.query(`UPDATE users SET password = '${password}' WHERE email = '${decoded.sub.emailId}'`)
     console.log(response);
     if(response.rowCount==0){
       return res.status(401).send({
