@@ -5,7 +5,7 @@ import {client} from '../../server'
 export const getProfile = async(req,res) =>{
     try{
         const decoded =jwt.decode(req.headers.token)
-        const profileData= await client.query(`select * from users where email='${decoded.sub}'`)
+        const profileData= await client.query(`select * from jcm_user where email='${decoded.sub}'`)
         if(profileData.rows.length<=0){
             res.status(401).send({
                 success:false,

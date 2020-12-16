@@ -1,5 +1,5 @@
 import { ExtractJwt } from 'passport-jwt'
-// import {Users} from '../api/users'
+// import {jcm_user} from '../api/jcm_user'
 import configKey from '../config'
 import bcrypt from 'bcrypt-nodejs'
 import {client} from '../server'
@@ -18,7 +18,7 @@ const localLogin = new LocalStrategy(
         try{
             const emailRegexp = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
             if(emailRegexp.test(email)){
-                client.query(`select email,password from users where email='${email}'`,async(err, results) => {
+                client.query(`select email,password from jcm_user where email='${email}'`,async(err, results) => {
                   if(err){
                     //  return res.status(400).json(err)
                      console.log("query error");
@@ -27,9 +27,9 @@ const localLogin = new LocalStrategy(
                      console.log(results.rows[0].password);
                      const validPassword = await bcrypt.compareSync(password, results.rows[0].password);
                      if(!validPassword){
-                         return done("Password is Incorrect Please try Again later",false);
+                        return done("Password is Incorrect Please try Again later",false);
                      }else{
-                          return done (null,results.rows[0]);
+                        return done (null,results.rows[0]);
                      }
                    }
                    else{
@@ -37,7 +37,7 @@ const localLogin = new LocalStrategy(
                         return done("email id is not found please enter valid email",false);
                    }
                 });
-    
+
             }
         }
         catch(err){
@@ -55,10 +55,9 @@ const jwtOptions = {
 }
 
 const jwtLogin = new JwtStrategy(jwtOptions, (jwt_payload, done)=>{
-    console.log("CHECKING LOGIN USING JWT");
-    client.query(`select * from users where email='${jwt_payload.sub}'`,async(err, results) => {
+    client.query(`select * from jcm_user where email='${jwt_payload.sub}'`,async(err, results) => {
         if(err){
-            console.log("jwt find query error"); 
+            console.log("jwt find query error");
          }
          else if(results.rows.length>=1){
             return done(null,results.rows[0]);

@@ -32,7 +32,6 @@ export const getData = async(req,res) =>{
                 success:true,
                 message:'data find successfully',
                 data:newitem,
-
             })
         }
     }

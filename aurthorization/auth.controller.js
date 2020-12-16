@@ -1,4 +1,4 @@
-// import {Users} from '../api/users'
+// import {jcm_user} from '../api/jcm_user'
 import bcrypt from 'bcrypt-nodejs'
 import jwt from 'jsonwebtoken'
 import configKey from '../config'
@@ -23,7 +23,7 @@ export const signup = async (req,res) =>{
 
         if(emailRegexp.test(email)){
             const emailId = email.toLowerCase();
-            client.query(`select email from users where email='${email}'`, (err, results) => {
+            client.query(`select email from jcm_user where email='${email}'`, (err, results) => {
               if(err){
                  return res.status(400).json(err)
                } else if(results.rows.length) {
@@ -32,7 +32,7 @@ export const signup = async (req,res) =>{
               }
               else {
                 client.query(
-                  `INSERT INTO users(name, email, password)VALUES('${name}', '${email}', '${bcrypt.hashSync(password)}')`,
+                  `INSERT INTO jcm_user(name, email, password)VALUES('${name}', '${email}', '${bcrypt.hashSync(password)}')`,
                   (err, results) => {
                     if(err){
                        return res.status(400).json(err)
@@ -85,7 +85,7 @@ export const signin = async (req,res) => {
     try{
         const emailRegexp = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
             if(emailRegexp.test(email)){
-               client.query(`select name,email from users where email='${email}'`, (err, results) => {
+               client.query(`select name,email from jcm_user where email='${email}'`, (err, results) => {
                  if(err){
                     return res.status(400).json(err)
                   }
@@ -125,7 +125,7 @@ export const forgotPassword = async (req,res) =>{
     if (!emailRegexp.test(emailId)) {
         return res.status(200).send({ success: false, message: "Invalid Email" });
       }
-    const isEmailExist = await client.query(`select name,email from users where email='${email}'`)
+    const isEmailExist = await client.query(`select name,email from jcm_user where email='${email}'`)
       if (!isEmailExist) {
         return res
           .status(200)
@@ -169,7 +169,7 @@ export const resetPassword = async(req,res) =>{
     const newPassword = req.body.password;
     const decoded =jwt.decode(token)
     const password= bcrypt.hashSync(newPassword)
-    const response = await client.query(`UPDATE users SET password = '${password}' WHERE email = '${decoded.sub.emailId}'`)
+    const response = await client.query(`UPDATE jcm_user SET password = '${password}' WHERE email = '${decoded.sub.emailId}'`)
     console.log(response);
     if(response.rowCount==0){
       return res.status(401).send({
