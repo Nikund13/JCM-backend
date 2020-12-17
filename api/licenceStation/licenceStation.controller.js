@@ -162,6 +162,26 @@ export const getStationDetail = async(req,res) =>{
                 message:'company not found'
             })
         }
+
+        var m = new Date();
+        const current_date = m.getUTCFullYear() +"-"+ (m.getUTCMonth()+1) +"-"+ m.getUTCDate() + " " + m.getUTCHours() + ":" + m.getUTCMinutes() + ":" + m.getUTCSeconds();
+
+        var currentDate = new Date(new Date().getTime() + 24 * 60 * 60 * 1000);
+        var day = currentDate.getDate();
+        var month = currentDate.getMonth() + 1;
+        var year = currentDate.getFullYear();
+
+        const tommorow_date = year +"-"+month+"-"+day+" "+ m.getUTCHours() + ":" + m.getUTCMinutes() + ":" + m.getUTCSeconds()
+
+      const summaryToday = await client.query(`SELECT sum (t.amount) as TotalAmount,
+                                              sum(t.volume) as TotalVolume,
+                                              count(id) as NumberOfSales
+                                              FROM public.dispenser_sale t where
+                                              t.company_code=${company_code.rows[0].id}
+                                              and t.station_code=${station_code}
+                                              and data_creation_time>'${current_date}'
+                                              and data_creation_time<'${tommorow_date}'`)
+
         const stationDetail= await client.query(`SELECT t.id,
                                                        t.data_creation_time,
                                                        F.fuel_name,
@@ -189,33 +209,38 @@ export const getStationDetail = async(req,res) =>{
                                                 ORDER BY t.data_creation_time desc
                                                 limit 10`)
 
-        const analogDetail = await client.query(`SELECT t.data_creation_time
-                                                     , t.analog_1
-                                                     , t.analog_2
-                                                     , t.analog_3
-                                                     , t.analog_4
+        const analogDetail = await client.query(`SELECT t.data_creation_time as LastUpdate
+                                                     , t.analog_1 as Tank1
+                                                     , t.analog_2 as Tank2
+                                                     , t.analog_3 as Tank3
+                                                     , t.analog_4 as Tank4
                                                 FROM public.analog_data t
                                                 where station_code=${station_code} and company_code =${company_code.rows[0].id}
                                                 ORDER BY t.id desc limit 1`)
-        if(stationDetail.rowCount<=0){
+        if(summaryToday.rowCount<=0){
             res.status(201).send({
                 success:false,
-                message:'stationDetail not found'
+                message:'Summary Today not found'
+            })
+        } else if(stationDetail.rowCount<=0){
+            res.status(201).send({
+                success:false,
+                message:'Station Detail not found'
             })
         }
         else if(analogDetail.rowCount<=0){
             res.status(201).send({
                 success:false,
-                message:'analogDetail not found'
+                message:'Analog Detail not found'
             })
         }
         else{
             res.status(201).send({
                 success:true,
                 message:'data find successfully',
+                summaryToday:summaryToday.rows,
                 stationDetail:stationDetail.rows,
                 analogDetail:analogDetail.rows,
-
             })
         }
     }
