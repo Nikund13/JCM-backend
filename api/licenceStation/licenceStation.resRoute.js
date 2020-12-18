@@ -5,7 +5,8 @@ import {
     deleteData,
     insertData,
     getCompanyId,
-    getStationDetail
+    getStationDetail,
+    getDispenserDetail
 } from './licenceStation.controller'
 export const licenceStationRouter = express.Router();
 
@@ -15,3 +16,4 @@ licenceStationRouter.post("/updateData",updateData)
 licenceStationRouter.post("/deleteData",deleteData)
 licenceStationRouter.get("/getCompanyId",getCompanyId)
 licenceStationRouter.get("/getStationDetail",getStationDetail)
+licenceStationRouter.get("/getDispenserDetail",getDispenserDetail)

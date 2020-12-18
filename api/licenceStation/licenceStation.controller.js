@@ -1,6 +1,7 @@
 import configKey from '../../config'
 import jwt from 'jsonwebtoken';
 import {client} from '../../server'
+import moment from 'moment'
 
 export const getData = async(req,res) =>{
     try{
@@ -163,23 +164,16 @@ export const getStationDetail = async(req,res) =>{
             })
         }
 
-        var m = new Date();
-        const current_date = m.getUTCFullYear() +"-"+ (m.getUTCMonth()+1) +"-"+ m.getUTCDate() + " " + m.getUTCHours() + ":" + m.getUTCMinutes() + ":" + m.getUTCSeconds();
+        const currentDate = moment().utc().format();
+        const tommorow_date = moment().add(2,'days').utc().format();
 
-        var currentDate = new Date(new Date().getTime() + 24 * 60 * 60 * 1000);
-        var day = currentDate.getDate();
-        var month = currentDate.getMonth() + 1;
-        var year = currentDate.getFullYear();
-
-        const tommorow_date = year +"-"+month+"-"+day+" "+ m.getUTCHours() + ":" + m.getUTCMinutes() + ":" + m.getUTCSeconds()
-
-      const summaryToday = await client.query(`SELECT sum (t.amount) as TotalAmount,
+        const summaryToday = await client.query(`SELECT sum (t.amount) as TotalAmount,
                                               sum(t.volume) as TotalVolume,
                                               count(id) as NumberOfSales
                                               FROM public.dispenser_sale t where
                                               t.company_code=${company_code.rows[0].id}
                                               and t.station_code=${station_code}
-                                              and data_creation_time>'${current_date}'
+                                              and data_creation_time>'${currentDate}'
                                               and data_creation_time<'${tommorow_date}'`)
 
         const stationDetail= await client.query(`SELECT t.id,
@@ -243,6 +237,65 @@ export const getStationDetail = async(req,res) =>{
                 analogDetail:analogDetail.rows,
             })
         }
+    }
+    catch(err){
+        res.status(401).send({
+            success:false,
+            message:err.message
+        })
+    }
+}
+
+
+export const getDispenserDetail = async(req,res) =>{
+    try{
+        const {company_name,station_code} = req.query;
+        console.log(company_name,station_code);
+        const company_code = await client.query(`select * from licence_company where company_name='${company_name}'`)
+        if(company_code.rowCount<=0){
+            res.status(201).send({
+                success:false,
+                message:'company not found'
+            })
+        }
+
+        const stationDetail= await client.query(`SELECT t.id,
+                                                       t.data_creation_time,
+                                                       F.fuel_name,
+                                                       t.plate_info,
+                                                       t.rf_card_code,
+                                                       t.payment_type,
+                                                       t.price_per_volume,
+                                                       t.volume,
+                                                       t.amount,
+                                                       t.start_total,
+                                                       t.end_total,
+                                                       t.dcr_total,
+                                                       t.dev_id,
+                                                       t.device_mode,
+                                                       t.pump_id,
+                                                       t.nozzle_id,
+                                                       t.tank_id,
+                                                       t.visual_pump_id,
+                                                       t.fleet_code,
+                                                       t.fleet_name
+                                                FROM public.dispenser_sale t
+                                                INNER JOIN fuel_name F on t.fuel_type_id = F.id
+                                                where company_code=${company_code.rows[0].id}
+                                                and station_code=${station_code}
+                                                ORDER BY t.data_creation_time desc`)
+      if(stationDetail.rowCount<=0){
+          res.status(201).send({
+              success:false,
+              message:'Dispenser Sale not found'
+          })
+      }else{
+          res.status(201).send({
+              success:true,
+              message:'data find successfully',
+              data:stationDetail.rows,
+          })
+      }
     }
     catch(err){
         res.status(401).send({

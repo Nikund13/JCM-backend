@@ -15,10 +15,10 @@ export const tankRouter = express.Router();
 
 tankRouter.get("/gettankdata",gettankdata)
 tankRouter.get("/getcompanyData",getcompanyData)
-tankRouter.get("/tankstationData",tankstationData)
+// tankRouter.get("/tankstationData",tankstationData)
 tankRouter.get("/tankFuelData",tankFuelData)
-tankRouter.get("/getprevMonthdata",getprevMonthdata)
-tankRouter.get("/getSummarydata",getSummarydata)
+// tankRouter.get("/getprevMonthdata",getprevMonthdata)
+// tankRouter.get("/getSummarydata",getSummarydata)
 tankRouter.get("/dispenserSale",dispenserSaleData)
 tankRouter.get('/blacklistFilter',blacklistFilter)
 tankRouter.get("/tankValues",tankValues)
