@@ -51,7 +51,6 @@ export const gettankdata = async(req,res) =>{
                 data:data.rows,
             })
         }
-        // console.log("timestamp",JSON.stringify(data.rows[0].data_creation_time);
     }
     catch(err){
         res.status(401).send({
@@ -64,7 +63,6 @@ export const gettankdata = async(req,res) =>{
 export const tankFuelData = async(req,res) =>{
     try{
         const {companyCode, stationCode}= req.query;
-        // const data= await client.query(`select DISTINCT fuel_type_id, fuel_name from tank_data where station_code='${stationCode}'`)
         const data= await client.query(`select DISTINCT t.tank_number from public.tank_data t where t.company_code='${companyCode}' and t.station_code='${stationCode}'`)
         if(data.rowCount<=0){
             res.status(401).send({
