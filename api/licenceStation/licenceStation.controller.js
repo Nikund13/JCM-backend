@@ -303,3 +303,28 @@
           })
       }
   }
+
+  export const getCompanyData = async(req,res) =>{
+      try{
+          const companyData= await client.query(`select * from licence_company ORDER BY id DESC`)
+          if(companyData.rowCount<=0){
+              res.status(401).send({
+                  success:false,
+                  message:'data not found'
+              })
+          }
+          else{
+              res.status(201).send({
+                  success:true,
+                  message:'data find successfully',
+                  data:companyData.rows,
+              })
+          }
+      }
+      catch(err){
+          res.status(401).send({
+              success:false,
+              message:err.message
+          })
+      }
+  }

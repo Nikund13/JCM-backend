@@ -179,21 +179,25 @@ export const blacklistFilter = async(req,res) =>{
     }
 }
 
-export const tankValues = async(req,res) =>{
+export const stationTankValues = async(req,res) =>{
     try{
-        const {stationCode}= req.query;
-        const data = await client.query(`SELECT T.tank_number, F.fuel_name, F.fuel_name, T.data_creation_time, T.fuel_level, T.fuel_vol, T.gross_fuel_vol, T.percent_filling, T.tank_capacity, T.temperature, T.water_level, T.water_vol
-	FROM
-		(SELECT tank_number, MAX(data_creation_time) AS last_date
-			FROM tank_data
-			WHERE station_code = '${stationCode}'
-			GROUP BY tank_number) SUBQUERY
-	INNER JOIN tank_data T
-		ON T.tank_number = SUBQUERY.tank_number
-			AND T.data_creation_time = SUBQUERY.last_date
-	INNER JOIN fuel_name F
-		ON F.id = fuel_type_id
-	ORDER BY T.tank_number`)
+        const {companyCode, stationCode}= req.query;
+        const data = await client.query(`SELECT T.station_code, T.company_code,
+        T.tank_number, F.fuel_name,
+        T.data_creation_time,
+        T.fuel_level, T.fuel_vol,
+        T.gross_fuel_vol, T.percent_filling,
+        T.tank_capacity, T.temperature,
+        T.water_level, T.water_vol
+        FROM
+        (SELECT DISTINCT tank_number, station_code, MAX(data_creation_time) AS last_date
+        FROM tank_data
+        WHERE company_code ='${companyCode}' and station_code='${stationCode}'
+        GROUP BY tank_number, station_code) SUBQUERY
+        INNER JOIN tank_data T ON T.tank_number = SUBQUERY.tank_number
+        AND T.data_creation_time = SUBQUERY.last_date
+        INNER JOIN fuel_name F ON F.id = fuel_type_id
+        ORDER BY T.station_code`)
 
         if(data.rowCount<=0){
             res.status(201).send({
@@ -214,6 +218,48 @@ export const tankValues = async(req,res) =>{
                 success:true,
                 message:'data find successfully',
                 data:newitem,
+            })
+        }
+    }
+    catch(err){
+        res.status(401).send({
+            success:false,
+            message:err.message
+        })
+    }
+}
+
+export const tankValues = async(req,res) =>{
+    try{
+        // const {stationCode}= req.query;
+        const data = await client.query(`SELECT T.station_code, T.company_code,
+        T.tank_number, F.fuel_name,
+        T.data_creation_time,
+        T.fuel_level, T.fuel_vol,
+        T.gross_fuel_vol, T.percent_filling,
+        T.tank_capacity, T.temperature,
+        T.water_level, T.water_vol
+        FROM
+        (SELECT DISTINCT tank_number, station_code, MAX(data_creation_time) AS last_date
+        FROM tank_data
+        WHERE company_code = 1
+        GROUP BY tank_number, station_code) SUBQUERY
+        INNER JOIN tank_data T ON T.tank_number = SUBQUERY.tank_number
+        AND T.data_creation_time = SUBQUERY.last_date
+        INNER JOIN fuel_name F ON F.id = fuel_type_id
+        ORDER BY T.station_code`)
+
+        if(data.rowCount<=0){
+            res.status(201).send({
+                success:false,
+                message:'data not found'
+            })
+        }
+        else{
+            res.status(201).send({
+                success:true,
+                message:'data find successfully',
+                data:data.rows,
             })
         }
     }
